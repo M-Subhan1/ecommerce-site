@@ -1,0 +1,25 @@
+// unique product names
+// Upload Products
+// (Place order (integrate API))
+
+// Add Meta Tags, SEO
+
+// Add order Details in track order
+// Add Delivery Charges (No delivery Charges for bill >= 2000?)
+
+
+// Update Landing Page
+// Host
+
+
+
+
+
+
+
+
+
+
+// user settings
+// Set-up Print Feature (write a custom script to extract product data and print/ cron-job)
+// Shop-keeper functionality = allow credit, apply different percentages for each item, inquire about district, regions, provinces
