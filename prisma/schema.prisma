@@ -6,3 +6,58 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model account {
+  email       String    @id @db.VarChar(255)
+  password    String?   @db.VarChar(255)
+  first_name  String?   @db.VarChar(100)
+  last_name   String?   @db.VarChar(100)
+  token_id    Int       @default(autoincrement())
+  is_verified Boolean?
+  token       token     @relation(fields: [token_id], references: [token_id], onDelete: NoAction, onUpdate: NoAction)
+  customer    customer?
+  product     product[]
+  review      review[]
+}
+
+model customer {
+  email   String  @id @db.VarChar(255)
+  rating  Int?
+  street  String? @db.VarChar(255)
+  city    String? @db.VarChar(255)
+  state   String? @db.VarChar(255)
+  country String? @db.VarChar(255)
+  account account @relation(fields: [email], references: [email], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model product {
+  product_id          Int      @id @default(autoincrement())
+  product_name        String?  @db.VarChar(255)
+  product_description String?  @db.VarChar(1000)
+  brand               String?  @db.VarChar(255)
+  price               Float?   @db.Real
+  stock               Int?
+  units_sold          Int?
+  discount            Float?   @default(0) @db.Real
+  email               String?  @db.VarChar(255)
+  account             account? @relation(fields: [email], references: [email], onDelete: NoAction, onUpdate: NoAction)
+  review              review[]
+}
+
+model review {
+  review_id  Int      @id @default(autoincrement())
+  rating     Float?   @db.Real
+  text       String?  @db.VarChar(500)
+  email      String?  @db.VarChar(255)
+  product_id Int      @default(autoincrement())
+  account    account? @relation(fields: [email], references: [email], onDelete: NoAction, onUpdate: NoAction)
+  product    product  @relation(fields: [product_id], references: [product_id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model token {
+  token_id     Int       @id @default(autoincrement())
+  token_string String?   @db.VarChar(50)
+  updated_at   DateTime? @db.Timestamp(6)
+  is_valid     Boolean?
+  account      account[]
+}
