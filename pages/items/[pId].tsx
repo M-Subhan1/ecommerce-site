@@ -13,8 +13,6 @@ import {
 import Image from "next/image";
 import { NextPage } from "next";
 import useStyles from "../../styles/productDetails";
-import { gql } from "@apollo/client";
-import client from "../../apollo-client";
 
 interface PageProps {
   product: CartItem;
@@ -131,58 +129,25 @@ interface Context {
 }
 
 export const getStaticProps = async (context: Context) => {
-  const { pId } = context.params;
-
-  const { data } = await client.query({
-    query: gql`
-      {
-        product(id: "${pId}") {
-          id
-          title
-          medium
-          class
-          stock
-          image {
-            url
-          }
-          category {
-            type
-            description
-          }
-          price
-          discount
-        }
-      }
-    `,
-  });
+  // const { pId } = context.params;
 
   return {
     props: {
-      product: data.product,
+      // product: data.product,
     },
   };
 };
 
 export const getStaticPaths = async () => {
-  const response = await client.query({
-    query: gql`
-      query {
-        products {
-          id
-        }
-      }
-    `,
-  });
+  // const { data } = response;
 
-  const { data } = response;
-
-  const paths = data.products.map((e: { id: string }) => ({
-    params: { pId: e.id },
-  }));
+  // const paths = data.products.map((e: { id: string }) => ({
+  //   // params: { pId: e.id },
+  // }));
 
   return {
     // paths: [{ params: { pId: "1" } }, { params: { pId: "2" } }],
-    paths,
+    // paths,
     fallback: false,
   };
 };

@@ -4,8 +4,6 @@ import { Container, Typography, Button, Box, Grid } from "@material-ui/core";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import TextField from "../components/TextField";
-import { gql } from "@apollo/client";
-import client from "../apollo-client";
 
 const schema = Yup.object({
   orderId: Yup.string().required(
@@ -22,22 +20,7 @@ const TrackOrder: FC = () => {
   };
 
   const handleSubmit = async ({ orderId }: { orderId: string }) => {
-    const { data } = await client.query({
-      query: gql`
-        query {
-          order(id: "${orderId}") {
-            status,
-            paymentDetails {
-              status,
-              billAmount,
-              method
-            },
-          }
-        }
-      `,
-    });
-
-    setOrder(data.order);
+    // setOrder(data.order);
   };
 
   const renderForm = () => {
