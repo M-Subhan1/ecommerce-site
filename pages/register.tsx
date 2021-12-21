@@ -49,25 +49,22 @@ const SignUp: NextPage<PageProps> = props => {
   if (props.user) router.push("/");
 
   const submit = async (data: { [key: string]: string }) => {
-    const response = await axios.post(
-      `${process.env.STRAPI_URL}/auth/local/register`,
-      {
-        username: data.username,
-        email: data.email,
-        password: data.password,
-      }
-    );
+    const response = await axios.post(`/api/auth/register`, {
+      username: data.username,
+      email: data.email,
+      password: data.password,
+    });
 
-    dispatch(
-      setSnackBar({
-        type: SnackBarType.error,
-        isOpen: true,
-        message: "Email registered for another account",
-      })
-    );
+    if (response.data.status == "error")
+      dispatch(
+        setSnackBar({
+          type: SnackBarType.error,
+          isOpen: true,
+          message: response.data.message,
+        })
+      );
 
-    console.log(response);
-    if (response.data.user) {
+    if (response.data.status == "success") {
       dispatch(
         setSnackBar({
           type: SnackBarType.success,
@@ -75,6 +72,7 @@ const SignUp: NextPage<PageProps> = props => {
           message: "Account created! Verification instructions sent via email",
         })
       );
+
       return router.push("/login");
     }
   };
