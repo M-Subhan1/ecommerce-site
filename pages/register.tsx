@@ -17,7 +17,8 @@ import { setSnackBar, SnackBarType } from "../src/actions";
 import * as Yup from "yup";
 
 const schema = Yup.object({
-  username: Yup.string().required("Please Enter a username"),
+  first_name: Yup.string().required("Required"),
+  last_name: Yup.string().required("Required"),
   email: Yup.string().email().required("Please Enter your Email"),
   password: Yup.string()
     .required("Please Enter your password")
@@ -31,7 +32,8 @@ const schema = Yup.object({
 });
 
 const initialState = {
-  username: "",
+  first_name: "",
+  last_name: "",
   email: "",
   password: "",
   confirmPassword: "",
@@ -49,13 +51,17 @@ const SignUp: NextPage<PageProps> = props => {
   if (props.user) router.push("/");
 
   const submit = async (data: { [key: string]: string }) => {
-    const response = await axios.post(`/api/auth/register`, {
-      username: data.username,
+    const response = await axios.post(`/api/user`, {
+      first_name: data.first_name,
+      last_name: data.last_name,
       email: data.email,
       password: data.password,
     });
 
-    if (response.data.status == "error")
+    console.log(response);
+
+    if (response.data.status == "error") {
+      console.log(response.data.message);
       dispatch(
         setSnackBar({
           type: SnackBarType.error,
@@ -63,6 +69,7 @@ const SignUp: NextPage<PageProps> = props => {
           message: response.data.message,
         })
       );
+    }
 
     if (response.data.status == "success") {
       dispatch(
@@ -96,12 +103,20 @@ const SignUp: NextPage<PageProps> = props => {
           <Form className={classes.form}>
             <Typography className={classes.label}>Enter your Name</Typography>
             <Grid container justifyContent={"space-between"}>
-              <Grid item xs={12} className={classes.gridLeft}>
+              <Grid item xs={12} md={6} className={classes.gridLeft}>
                 <TextField
                   variant='outlined'
                   margin='normal'
-                  label='Username'
-                  name='username'
+                  label='First Name'
+                  name='first_name'
+                />
+              </Grid>
+              <Grid item xs={12} md={6} className={classes.gridRight}>
+                <TextField
+                  variant='outlined'
+                  margin='normal'
+                  label='Last Name'
+                  name='last_name'
                 />
               </Grid>
             </Grid>

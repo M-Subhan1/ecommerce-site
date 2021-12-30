@@ -3,15 +3,9 @@ import { ActionTypes } from "./index";
 import { Action, Dispatch } from "redux";
 import { IState } from "../reducers";
 
-declare const process: {
-  env: {
-    STRAPI_URL: string;
-  };
-};
-
 export interface SignInAction {
   type: ActionTypes.SIGN_IN;
-  payload: IState["user"];
+  payload: { user: any };
 }
 
 export interface SignOutAction {
@@ -22,15 +16,12 @@ export interface SignOutAction {
 export const sign_in =
   (auth: { [key: string]: string }) =>
   async (dispatch: Dispatch<SignInAction>) => {
-    const { data }: any = await axios.post(
-      `${process.env.STRAPI_URL}/auth/local`,
-      auth
-    );
+    const { data }: any = await axios.post(`/api/auth`, auth);
 
-    if (!data.jwt) return;
+    if (!data.token) return;
 
-    localStorage.setItem("token", data.jwt);
-    localStorage.setItem("user", JSON.stringify(auth));
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", data.user);
 
     dispatch<SignInAction>({
       type: ActionTypes.SIGN_IN,
@@ -40,7 +31,6 @@ export const sign_in =
 
 export const sign_out: () => SignOutAction = () => {
   localStorage.removeItem("token");
-  localStorage.removeItem("user");
   return {
     type: ActionTypes.SIGN_OUT,
     payload: null,

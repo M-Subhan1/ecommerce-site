@@ -41,7 +41,7 @@ const Cart: NextPage<PageProps> = props => {
             <Box
               className={classes.button}
               component='span'
-              onClick={() => router.push("/store")}
+              onClick={() => router.push("/")}
             >
               Visit Store
             </Box>

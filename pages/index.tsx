@@ -12,6 +12,7 @@ import { fetchItems, addToCart } from "../src/actions";
 import useStyles from "../styles";
 import { IState } from "../src/reducers";
 import Card from "../components/Card";
+import { prisma } from "../src/db";
 
 interface PageProps {
   books: IState["books"];
@@ -180,9 +181,10 @@ const ViewCategory: NextPage<PageProps> = props => {
 };
 
 export const getStaticProps = async () => {
+  const books = await prisma.$queryRaw`SELECT * FROM Product`;
   return {
     props: {
-      // books: data.products,
+      books,
     },
   };
 };

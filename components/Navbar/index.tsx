@@ -54,8 +54,8 @@ const NavBar: FC<NavBarProps> = props => {
   useEffect(() => {
     if (props.user) return;
 
-    const user = localStorage.getItem("user");
-    if (user) props.sign_in(JSON.parse(user));
+    const token = localStorage.getItem("token");
+    if (token) props.sign_in({ identifier: token });
   }, []);
 
   return (

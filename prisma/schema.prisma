@@ -16,9 +16,26 @@ model account {
   token_string     String    @default(dbgenerated("uuid_generate_v1()")) @db.Uuid
   token_updated_at DateTime  @default(now()) @db.Timestamp(6)
   token_is_valid   Boolean   @default(true)
+  account_type     String    @default("customer") @db.VarChar(15)
   customer         customer?
   orders           orders[]
   review           review[]
+}
+
+model cart {
+  cart_id     Int         @id @default(autoincrement())
+  total_items Int
+  cart_list   cart_list[]
+}
+
+model cart_list {
+  cart_id    Int
+  product_id Int
+  units      Int     @default(1)
+  cart       cart    @relation(fields: [cart_id], references: [cart_id], onDelete: Cascade)
+  product    product @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
+
+  @@id([cart_id, product_id])
 }
 
 model customer {
@@ -29,30 +46,6 @@ model customer {
   state   String  @db.VarChar(255)
   country String  @db.VarChar(255)
   account account @relation(fields: [email], references: [email], onDelete: Cascade)
-}
-
-model product {
-  product_id          Int          @id @default(autoincrement())
-  product_name        String       @db.VarChar(255)
-  product_description String       @db.VarChar(1000)
-  brand               String       @db.VarChar(255)
-  price               Float        @db.Real
-  stock               Int          @default(0)
-  units_sold          Int          @default(0)
-  discount            Float        @default(0) @db.Real
-  cart_list           cart_list[]
-  order_list          order_list[]
-  review              review[]
-}
-
-model review {
-  review_id  Int      @id @default(autoincrement())
-  rating     Float    @db.Real
-  text       String   @db.VarChar(500)
-  email      String?  @db.VarChar(255)
-  product_id Int?
-  account    account? @relation(fields: [email], references: [email], onDelete: Cascade)
-  product    product? @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
 }
 
 model order_list {
@@ -81,18 +74,26 @@ model orders {
   order_list    order_list[]
 }
 
-model cart {
-  cart_id     Int         @id @default(autoincrement())
-  total_items Int
-  cart_list   cart_list[]
+model product {
+  product_id          Int          @id @default(autoincrement())
+  product_name        String       @db.VarChar(255)
+  product_description String       @db.VarChar(1000)
+  brand               String       @db.VarChar(255)
+  price               Float        @db.Real
+  stock               Int          @default(0)
+  units_sold          Int          @default(0)
+  discount            Float        @default(0) @db.Real
+  cart_list           cart_list[]
+  order_list          order_list[]
+  review              review[]
 }
 
-model cart_list {
-  cart_id    Int
-  product_id Int
-  units      Int     @default(1)
-  cart       cart    @relation(fields: [cart_id], references: [cart_id], onDelete: Cascade)
-  product    product @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
-
-  @@id([cart_id, product_id])
+model review {
+  review_id  Int      @id @default(autoincrement())
+  rating     Float    @db.Real
+  text       String   @db.VarChar(500)
+  email      String?  @db.VarChar(255)
+  product_id Int?
+  account    account? @relation(fields: [email], references: [email], onDelete: Cascade)
+  product    product? @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
 }

@@ -1,5 +1,6 @@
-import { prisma } from "../../src/db";
+import { prisma } from "../../../src/db";
 import { NextApiRequest, NextApiResponse } from "next";
+import { v2 as cloudinary } from "cloudinary";
 
 export default async function handler(
   req: NextApiRequest,
@@ -9,8 +10,6 @@ export default async function handler(
     const { method } = req;
     method === "GET"
       ? get(req, res)
-      : method === "POST"
-      ? post(req, res)
       : method === "DELETE"
       ? delete_method(req, res)
       : res.status(401).json({
@@ -26,34 +25,17 @@ export default async function handler(
 }
 
 async function get(req: NextApiRequest, res: NextApiResponse) {
-  try {
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({
-      status: "error",
-      error: err,
-    });
-  }
+  const { id } = req.query;
+  const items =
+    await prisma.$queryRaw`SELECT * FROM Product WHERE product_id = ${id}`;
+  return res.json({
+    status: "success",
+    data: items,
+  });
 }
 
 async function delete_method(req: NextApiRequest, res: NextApiResponse) {
-  try {
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({
-      status: "error",
-      error: err,
-    });
-  }
-}
-
-async function post(req: NextApiRequest, res: NextApiResponse) {
-  try {
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({
-      status: "error",
-      error: err,
-    });
-  }
+  return res.status(500).json({
+    status: "error",
+  });
 }

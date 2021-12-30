@@ -1,6 +1,7 @@
 import { ActionTypes, Action, SnackBarState, SnackBarType } from "./actions";
 import { combineReducers } from "redux";
 import { CartItem } from "./actions/cart";
+import axios from "axios";
 
 interface ResponseUser {}
 
@@ -15,10 +16,9 @@ export interface IState {
 const user = (state: ResponseUser | null = null, action: Action) => {
   switch (action.type) {
     case ActionTypes.SIGN_IN:
-      sessionStorage.setItem("user", JSON.stringify(action.payload));
       return action.payload;
     case ActionTypes.SIGN_OUT:
-      sessionStorage.removeItem("user");
+      localStorage.removeItem("token");
       return null;
     default:
       return state;
