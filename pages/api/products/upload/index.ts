@@ -11,7 +11,8 @@ export const config = {
 };
 
 export const saveFile = async (file: any, fileName: string) => {
-  cloudinary.uploader.upload(file, async (result: any) => {
+  // fs.writeFileSync(file);
+  cloudinary.uploader.upload(file.filepath, async (result: any) => {
     console.log(result);
   });
 };
@@ -27,12 +28,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
 const post = async (req: NextApiRequest, res: NextApiResponse) => {
   const form = new formidable.IncomingForm();
-  form.parse(req, async (err, fields, files) => {
-    const resu: any = fields;
-    // const user: any[] =
-    //   await prisma.$queryRaw`SELECT * FROM Account WHERE token_string::text = ${
-    //     fields.token
-    //   } AND account_type = ${"admin"}`;
+  form.parse(req, async (err, fields: any, files: any) => {
+    const user: any[] =
+      await prisma.$queryRaw`SELECT * FROM Account WHERE token_string::text = ${fields.token} AND account_type = 'admin'`;
 
     // if (!user.length)
     //   return res.json({
@@ -40,30 +38,38 @@ const post = async (req: NextApiRequest, res: NextApiResponse) => {
     //     message: "Invalid Token",
     //   });
 
-    // if (!(files.image instanceof Array)) {
-    //   const fileName = `${fields.type}-${fields.title}-${fields.class}-${
-    //     fields.medium
-    //   }.${files.image.name.split(".")[1]}`.toLowerCase();
-    // }
-    console.log(fields);
-    const item: [] =
-      await prisma.$queryRaw`INSERT INTO Product(product_name, product_description, product_type, brand, price, stock) VALUES (${resu.name}, ${resu.description}, ${resu.product_type}, ${resu.brand}, ${resu.price}, 10) RETURNING *;`;
+    if (!files.image) {
+      return res.json({
+        status: "error",
+        message: "Invalid Image",
+      });
+    }
 
-    // if (item.length) {
-    //   return res.status(409).json({
-    //     success: false,
-    //     message: "A Product with same product Id already exists",
-    //   });
-    // }
+    cloudinary.uploader.upload(
+      files.image.filepath,
+      async (err: any, result: any) => {
+        if (err) {
+          return res.json({
+            status: "error",
+            message: "Invalid Image",
+          });
+        }
 
-    // await saveFile(files.image);
-    // Creating an item
-    console.log(fields);
-    console.log(files);
+        const item: [] =
+          await prisma.$queryRaw`INSERT INTO Product(product_name, product_description, product_type, brand, price, discount, stock, image_url) VALUES (${
+            fields.name
+          }, ${fields.description}, ${fields.product_type}, ${
+            fields.brand
+          }, ${parseFloat(fields.price)}, ${parseFloat(
+            fields.discount
+          )}, ${parseInt(fields.stock)}, ${result.url}) RETURNING *`;
 
-    return res.json({
-      success: true,
-      message: "Item Created",
-    });
+        console.log(item);
+        return res.status(201).json({
+          success: true,
+          message: "Item Created",
+        });
+      }
+    );
   });
 };
