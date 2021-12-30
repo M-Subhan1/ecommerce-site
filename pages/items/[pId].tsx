@@ -128,28 +128,28 @@ interface Context {
   };
 }
 
-export const getStaticProps = async (context: Context) => {
-  // const { pId } = context.params;
+// export const getStaticProps = async (context: Context) => {
+//   // const { pId } = context.params;
 
-  return {
-    props: {
-      // product: data.product,
-    },
-  };
-};
+//   return {
+//     props: {
+//       // product: data.product,
+//     },
+//   };
+// };
 
-export const getStaticPaths = async () => {
-  // const { data } = response;
+// export const getStaticPaths = async () => {
+//   // const { data } = response;
 
-  // const paths = data.products.map((e: { id: string }) => ({
-  //   // params: { pId: e.id },
-  // }));
+//   // const paths = data.products.map((e: { id: string }) => ({
+//   //   // params: { pId: e.id },
+//   // }));
 
-  return {
-    // paths: [{ params: { pId: "1" } }, { params: { pId: "2" } }],
-    // paths,
-    fallback: false,
-  };
-};
+//   return {
+//     // paths: [{ params: { pId: "1" } }, { params: { pId: "2" } }],
+//     // paths,
+//     fallback: false,
+//   };
+// };
 
 export default connect(null, { addToCart })(ViewItem);

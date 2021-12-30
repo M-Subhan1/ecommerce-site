@@ -20,6 +20,8 @@ export const sign_in =
 
     if (!data.token) return;
 
+    console.log(data);
+
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", data.user);
 

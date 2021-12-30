@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
-import { useRouter } from "next/dist/client/router";
 import { makeStyles } from "@material-ui/core";
 import { Box, Grid, Button } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
@@ -8,9 +7,9 @@ import AddIcon from "@material-ui/icons/Add";
 import DeleteIcon from "@material-ui/icons/Delete";
 import StoreIcon from "@material-ui/icons/Store";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
-import AddItem from "../../src/components/dashboard/addItem";
-import ViewItems from "../../src/components/dashboard/viewItems";
-import ViewOrders from "../../src/components/dashboard/viewOrders";
+import AddItem from "../../components/dashboard/addItem";
+import ViewItems from "../../components/dashboard/viewItems";
+import ViewOrders from "../../components/dashboard/viewOrders";
 import HomeIcon from "@material-ui/icons/Home";
 
 const useStyles = makeStyles(theme => ({
@@ -210,6 +209,7 @@ const Dashboard = props => {
   const [option, setOption] = useState(0);
 
   const options = [
+    <AddItem key='add' classes={classes} />,
     <AddItem key='add' classes={classes} />,
     <ViewItems key='delete' classes={classes} />,
     <ViewOrders key='orders' classes={classes} />,

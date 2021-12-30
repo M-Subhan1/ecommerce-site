@@ -80,9 +80,10 @@ model product {
   product_description String       @db.VarChar(1000)
   brand               String       @db.VarChar(255)
   price               Float        @db.Real
-  stock               Int          @default(0)
-  units_sold          Int          @default(0)
-  discount            Float        @default(0) @db.Real
+  stock               Int?         @default(0)
+  units_sold          Int?         @default(0)
+  discount            Float?       @default(0) @db.Real
+  product_type        String?      @db.VarChar(50)
   cart_list           cart_list[]
   order_list          order_list[]
   review              review[]

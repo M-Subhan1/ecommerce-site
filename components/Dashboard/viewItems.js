@@ -17,7 +17,7 @@ import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { connect } from "react-redux";
-import { fetchBooks, deleteItem } from "../../actions/index";
+import { fetchItems } from "../../src/actions/index";
 import axios from "axios";
 import Image from "next/image";
 
@@ -36,7 +36,7 @@ function Row(props) {
   const [open, setOpen] = React.useState(false);
 
   const handleDelete = async productId => {
-    props.deleteItem(productId);
+    // props.deleteItem(productId);
 
     const response = await axios.post(`/api/items/${productId}`, {
       data: { token: localStorage.getItem("token") },
@@ -338,4 +338,4 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps, { fetchBooks, deleteItem })(ViewItems);
+export default connect(mapStateToProps, { fetchItems })(ViewItems);
