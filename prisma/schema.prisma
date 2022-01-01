@@ -17,25 +17,27 @@ model account {
   token_updated_at DateTime  @default(now()) @db.Timestamp(6)
   token_is_valid   Boolean   @default(true)
   account_type     String    @default("customer") @db.VarChar(15)
+  cart             cart?
   customer         customer?
   orders           orders[]
   review           review[]
 }
 
 model cart {
-  cart_id     Int         @id @default(autoincrement())
-  total_items Int
+  total_items Int         @default(0)
+  user_id     String      @id @db.VarChar(255)
+  account     account     @relation(fields: [user_id], references: [email], onDelete: Cascade, map: "cart_account_fk")
   cart_list   cart_list[]
 }
 
 model cart_list {
-  cart_id    Int
   product_id Int
   units      Int     @default(1)
-  cart       cart    @relation(fields: [cart_id], references: [cart_id], onDelete: Cascade)
-  product    product @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
+  user_id    String  @db.VarChar(255)
+  product    product @relation(fields: [product_id], references: [product_id], onDelete: Cascade, map: "cart_list_product_fk")
+  cart       cart    @relation(fields: [user_id], references: [user_id], onDelete: Cascade, map: "cart_list_cart_fk")
 
-  @@id([cart_id, product_id])
+  @@id([user_id, product_id], map: "cart_list_pk")
 }
 
 model customer {
