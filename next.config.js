@@ -10,7 +10,7 @@ module.exports = {
     return config;
   },
   images: {
-    domains: ["localhost"],
+    domains: ["localhost", "res.cloudinary.com"],
   },
   env: {
     STRAPI_URL: "http://localhost:8000",

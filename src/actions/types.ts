@@ -8,17 +8,21 @@ import {
   PlaceOrderAction,
   CancelOrderAction,
   SetSnackBarAction,
+  SelectItemAction,
+  DeleteItemAction,
 } from ".";
 
 export enum ActionTypes {
   // ITEMS
   FETCH_ITEM,
   FETCH_ITEMS,
+  DELETE_ITEM,
   // USERS
   SIGN_IN,
   SIGN_OUT,
   ADD_TO_CART,
   REMOVE_FROM_CART,
+  SELECT_ITEM,
   // ORDER
   PLACE_ORDER,
   CANCEL_ORDER,
@@ -35,4 +39,6 @@ export type Action =
   | RemoveFromCartAction
   | PlaceOrderAction
   | CancelOrderAction
-  | SetSnackBarAction;
+  | SetSnackBarAction
+  | SelectItemAction
+  | DeleteItemAction;

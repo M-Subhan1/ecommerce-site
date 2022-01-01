@@ -26,6 +26,6 @@ async function get(req: NextApiRequest, res: NextApiResponse) {
 
   return res.json({
     status: "success",
-    data: items,
+    items,
   });
 }

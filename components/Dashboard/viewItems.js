@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Grid, Button, Divider, TextField } from "@material-ui/core";
-import PropTypes from "prop-types";
+import { Grid, Button, TextField } from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import Collapse from "@material-ui/core/Collapse";
 import IconButton from "@material-ui/core/IconButton";
@@ -17,31 +16,25 @@ import KeyboardArrowDownIcon from "@material-ui/icons/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@material-ui/icons/KeyboardArrowUp";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { connect } from "react-redux";
-import { fetchItems } from "../../src/actions/index";
+import { fetchItems, deleteItem } from "../../src/actions/index";
 import axios from "axios";
 import Image from "next/image";
 
-function createData(id, price, quantity, discount, details) {
+function createData(id, name, type, price, discount, stock, units_sold) {
   return {
     id,
+    name,
+    type,
     price,
-    quantity,
     discount,
-    details,
+    stock,
+    units_sold,
   };
 }
 
 function Row(props) {
   const { row, selectProduct } = props;
   const [open, setOpen] = React.useState(false);
-
-  const handleDelete = async productId => {
-    // props.deleteItem(productId);
-
-    const response = await axios.post(`/api/items/${productId}`, {
-      data: { token: localStorage.getItem("token") },
-    });
-  };
 
   return (
     <React.Fragment>
@@ -58,17 +51,17 @@ function Row(props) {
         <TableCell component='th' scope='row'>
           {row.id}
         </TableCell>
-        <TableCell align='center'>
-          {`${row.details.type} ${row.details.title}-${row.details.class} ${row.details.medium} Medium`.toUpperCase()}
-        </TableCell>
+        <TableCell align='center'>{`${row.name}`.toUpperCase()}</TableCell>
+        <TableCell align='center'>{`${row.type}`.toUpperCase()}</TableCell>
         <TableCell align='right'>{row.price}</TableCell>
-        <TableCell align='right'>{row.quantity}</TableCell>
+        <TableCell align='right'>{row.stock}</TableCell>
+        <TableCell align='right'>{row.units_sold}</TableCell>
         <TableCell align='right'>{row.discount}</TableCell>
         <TableCell align='center'>
           <Button onClick={() => selectProduct(row)}>
             <EditIcon />
           </Button>
-          <Button color='secondary' onClick={() => handleDelete(row.id)}>
+          <Button color='secondary' onClick={() => props.deleteItem(row.id)}>
             <DeleteIcon />
           </Button>
         </TableCell>
@@ -130,26 +123,6 @@ function Row(props) {
 
 const rows = [];
 
-Row.propTypes = {
-  row: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired,
-    price: PropTypes.number.isRequired,
-    quantity: PropTypes.number.isRequired,
-    discount: PropTypes.number.isRequired,
-    details: PropTypes.arrayOf(
-      PropTypes.shape({
-        productId: PropTypes.number.isRequired,
-        type: PropTypes.string.isRequired,
-        title: PropTypes.string.isRequired,
-        image: PropTypes.string.isRequired,
-        quantitySold: PropTypes.number.isRequired,
-        quantity: PropTypes.number.isRequired,
-      })
-    ).isRequired,
-  }).isRequired,
-};
-
 function ViewItems(props) {
   const classes = props.classes;
   const [rows, setRows] = useState([]);
@@ -159,7 +132,7 @@ function ViewItems(props) {
 
   const initialState = {
     price: 0,
-    quantity: 0,
+    stock: 0,
     discount: 0,
     image: null,
   };
@@ -174,7 +147,7 @@ function ViewItems(props) {
     );
 
     formData.append("token", localStorage.getItem("token"));
-    axios.patch(`/api/items/upload/${selectedProduct.productId}`, formData);
+    axios.patch(`/api/products/upload/${selectedProduct.productId}`, formData);
   };
 
   const setNewValue = (prop, e) => {
@@ -196,25 +169,28 @@ function ViewItems(props) {
   }, [selectedProduct]);
 
   useEffect(() => {
-    if (props.books.length) return;
-    props.fetchBooks();
+    console.log(props.products);
+    if (props.products.length) return;
+    props.fetchItems();
   }, []);
 
   useEffect(() => {
     setRows(
-      props.books.map(book =>
+      props.products.map(item =>
         createData(
-          book.productId,
-          book.price,
-          book.quantity,
-          book.discount,
-          book
+          item.product_id,
+          item.product_name,
+          item.product_type,
+          item.price,
+          item.discount,
+          item.stock,
+          item.units_sold
         )
       )
     );
-  }, [props.books]);
+  }, [props.products]);
 
-  if (!props.books?.length)
+  if (!props.products?.length)
     return <Box className={props.classes.ordersContainer}>No Active Items</Box>;
 
   if (!selectedProduct)
@@ -233,8 +209,10 @@ function ViewItems(props) {
                 <TableCell />
                 <TableCell>Product Id</TableCell>
                 <TableCell align='center'>Name</TableCell>
+                <TableCell align='right'>Product Type</TableCell>
                 <TableCell align='right'>Price (Rs)</TableCell>
-                <TableCell align='right'>Quantity</TableCell>
+                <TableCell align='right'>Stock</TableCell>
+                <TableCell align='right'>Units Sold</TableCell>
                 <TableCell align='right'>Discount</TableCell>
                 <TableCell />
               </TableRow>
@@ -245,7 +223,7 @@ function ViewItems(props) {
                   key={row.id}
                   row={row}
                   deleteItem={props.deleteItem}
-                  selectProduct={product => setSelectedProduct(product.details)}
+                  selectProduct={product => setSelectedProduct(product)}
                 />
               ))}
             </TableBody>
@@ -258,13 +236,13 @@ function ViewItems(props) {
     <Box className={classes.editProductContainer}>
       <Grid container>
         <Grid item lg={4} md={6} xs={12}>
-          <Image width={180} height={250} src={"/images/2.jpg"} />
+          <Image width={180} height={250} src={product.image_url} />
         </Grid>
         <Grid item container lg={8} md={6} xs={12}>
           <Grid item xs={4} className={classes.gridItem}>
             <TextField
-              onChange={e => setNewValue("quantity", e)}
-              value={formValues.quantity}
+              onChange={e => setNewValue("stock", e)}
+              value={formValues.stock}
               fullWidth
               variant='outlined'
               required
@@ -333,9 +311,10 @@ function ViewItems(props) {
 }
 
 const mapStateToProps = state => {
+  console.log(state);
   return {
-    books: state.books,
+    products: state.items,
   };
 };
 
-export default connect(mapStateToProps, { fetchItems })(ViewItems);
+export default connect(mapStateToProps, { fetchItems, deleteItem })(ViewItems);

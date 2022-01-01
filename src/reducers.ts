@@ -7,8 +7,8 @@ interface ResponseUser {}
 
 export interface IState {
   user: null | ResponseUser;
-  books: CartItem[];
-  selectedBook: null | CartItem;
+  items: CartItem[];
+  selectedItem: null | CartItem;
   cart: CartItem[];
   snackbar: SnackBarState;
 }
@@ -25,24 +25,28 @@ const user = (state: ResponseUser | null = null, action: Action) => {
   }
 };
 
-const books = (state: CartItem[] = [], action: Action) => {
+const items = (state: CartItem[] = [], action: Action) => {
   switch (action.type) {
     case ActionTypes.FETCH_ITEMS:
       return action.payload;
+    case ActionTypes.DELETE_ITEM:
+      return state.filter(item => item.product_id !== parseInt(action.payload));
     case ActionTypes.ADD_TO_CART:
-      return state.map(book =>
-        book.id === action.payload.item.id
-          ? { ...book, stock: book.stock - action.payload.quantity }
-          : book
+      return state.map(item =>
+        item.product_id === action.payload.item.product_id
+          ? { ...item, stock: item.stock - action.payload.quantity }
+          : item
       );
     default:
       return state;
   }
 };
 
-const selectedBook = (state: CartItem | null = null, action: Action) => {
+const selectedItem = (state: CartItem | null = null, action: Action) => {
   switch (action.type) {
     case ActionTypes.FETCH_ITEM:
+      return action.payload;
+    case ActionTypes.SELECT_ITEM:
       return action.payload;
     default:
       return state;
@@ -57,7 +61,7 @@ const cart = (state: CartItem[] = [], action: Action) => {
 
     case ActionTypes.ADD_TO_CART: {
       const { item, quantity } = action.payload;
-      const index = state.findIndex(el => el.id === item.id);
+      const index = state.findIndex(el => el.product_id === item.product_id);
       const newState = [...state];
 
       if (index !== -1) newState[index].quantity += quantity;
@@ -68,7 +72,9 @@ const cart = (state: CartItem[] = [], action: Action) => {
 
     case ActionTypes.REMOVE_FROM_CART:
       return state
-        .map(item => (item.id === action.payload.id ? action.payload : item))
+        .map(item =>
+          item.product_id === action.payload.product_id ? action.payload : item
+        )
         .filter(item => (item.quantity > 0 ? true : false));
 
     default:
@@ -103,7 +109,6 @@ const snackbar = (
       };
 
     case ActionTypes.SIGN_IN: {
-      console.log(action.payload);
       return action.payload
         ? { isOpen: true, message: `Welcome`, type: SnackBarType.success }
         : {
@@ -125,4 +130,4 @@ const snackbar = (
   }
 };
 
-export default combineReducers({ user, books, cart, snackbar, selectedBook });
+export default combineReducers({ user, items, cart, snackbar, selectedItem });

@@ -13,20 +13,30 @@ import {
 import Image from "next/image";
 import { NextPage } from "next";
 import useStyles from "../../styles/productDetails";
+import { IState } from "../../src/reducers";
+import { fetchItem } from "../../src/actions/items";
+import axios from "axios";
 
 interface PageProps {
-  product: CartItem;
+  product: CartItem | null;
   addToCart: (item: CartItem, qty?: number) => void;
+  fetchItem: (id: any) => void;
 }
 
 const ViewItem: NextPage<PageProps> = props => {
   const router = useRouter();
   const classes = useStyles();
   const [qty, setQty] = useState(1);
-  const { product } = props;
+  const [product, setProduct] = useState(props.product);
 
   useEffect(() => {
-    if (!props.product) router.push("/404");
+    if (!product && router.query.pId) {
+      (async () => {
+        const res = await axios.get(`/api/products/${router.query.pId}`);
+        if (!res.data?.item) router.push("/404");
+        setProduct(res.data.item);
+      })();
+    }
   });
 
   const handleChange: EventHandler<any> = event => {
@@ -53,12 +63,7 @@ const ViewItem: NextPage<PageProps> = props => {
           // s={4}
           xs={12}
         >
-          <Image
-            alt='title'
-            width={350}
-            height={500}
-            src={`${process.env.STRAPI_URL}${props.product.image.url}`}
-          />
+          <Image alt='title' width={350} height={500} src={product.image_url} />
         </Grid>
         <Grid
           className={classes.detailsContainer}
@@ -72,14 +77,14 @@ const ViewItem: NextPage<PageProps> = props => {
         >
           <Box>
             <Typography className={classes.title} variant='h5' align='center'>
-              {props.product.title}
+              {product.product_name}
             </Typography>
             <Typography className={classes.description}>
-              {props.product.category.description}
+              {/* {props.product.category.description} */}
             </Typography>
           </Box>
           <Box>
-            {props.product.quantity <= 0 ? (
+            {product.quantity <= 0 ? (
               <Box className={classes.outOfStock}>
                 <Typography align='center'>Out of Stock</Typography>
               </Box>
@@ -101,7 +106,7 @@ const ViewItem: NextPage<PageProps> = props => {
                 </Grid>
                 <Grid item xs={4}>
                   <TextField
-                    error={qty < 1 || qty > props.product.quantity}
+                    error={qty < 1 || qty > product.quantity}
                     helperText={
                       qty <= 0 ? "Quantity cannot be less than 1" : ""
                     }
@@ -128,28 +133,10 @@ interface Context {
   };
 }
 
-// export const getStaticProps = async (context: Context) => {
-//   // const { pId } = context.params;
+const mapStateToProps = (state: IState) => {
+  return {
+    product: state.selectedItem,
+  };
+};
 
-//   return {
-//     props: {
-//       // product: data.product,
-//     },
-//   };
-// };
-
-// export const getStaticPaths = async () => {
-//   // const { data } = response;
-
-//   // const paths = data.products.map((e: { id: string }) => ({
-//   //   // params: { pId: e.id },
-//   // }));
-
-//   return {
-//     // paths: [{ params: { pId: "1" } }, { params: { pId: "2" } }],
-//     // paths,
-//     fallback: false,
-//   };
-// };
-
-export default connect(null, { addToCart })(ViewItem);
+export default connect(mapStateToProps, { addToCart, fetchItem })(ViewItem);

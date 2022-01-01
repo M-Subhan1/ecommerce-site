@@ -14,9 +14,9 @@ const FeaturedProducts: FC<ComponentProps> = props => {
   const classes = useStyles();
 
   const renderCards = () => {
-    return props.featuredBooks.map(book => (
+    return props.featuredBooks.map(item => (
       <Grid
-        key={book.id}
+        key={item.product_id}
         sm={6}
         lg={4}
         xs={12}
@@ -25,7 +25,7 @@ const FeaturedProducts: FC<ComponentProps> = props => {
       >
         <Card
           card={{
-            item: book,
+            item: item,
           }}
           addToCart={props.addToCart}
         />

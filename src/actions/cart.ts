@@ -1,18 +1,14 @@
 import { ActionTypes } from ".";
+import axios from "axios";
+import { Dispatch } from "redux";
 
 export interface CartItem {
-  id: number;
-  title: string;
-  medium: string;
-  class: number;
+  product_id: number;
+  product_name: string;
+  product_description: string;
   stock: number;
-  image: {
-    url: string;
-  };
-  category: {
-    type: string;
-    description: string;
-  };
+  image_url: string;
+  product_type: string;
   price: number;
   discount: number;
   quantity: number;
@@ -31,15 +27,30 @@ export interface RemoveFromCartAction {
   payload: CartItem;
 }
 
-export const addToCart: (a: CartItem, b?: number) => AddToCartAction = (
-  item,
-  qty = 1
-) => {
-  return {
-    type: ActionTypes.ADD_TO_CART,
-    payload: { item: item, quantity: qty },
+// export const addToCart: (a: CartItem, b?: number) => AddToCartAction = (
+//   item,
+//   qty = 1
+// ) => {
+//   return {
+//     type: ActionTypes.ADD_TO_CART,
+//     payload: { item: item, quantity: qty },
+//   };
+// };
+
+export const addToCart: (a: CartItem, b?: number) => void =
+  (item, qty = 1) =>
+  async (dispatch: Dispatch) => {
+    await axios.post(
+      `/api/cart`,
+      { product_id: item.product_id, quantity: qty },
+      { headers: { authorization: localStorage.getItem("token") } }
+    );
+
+    dispatch<AddToCartAction>({
+      type: ActionTypes.ADD_TO_CART,
+      payload: { item: item, quantity: qty },
+    });
   };
-};
 
 export const removeFromCart: (
   item: CartItem,

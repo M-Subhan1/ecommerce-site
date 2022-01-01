@@ -1,6 +1,7 @@
 import { prisma } from "../../../src/db";
 import { NextApiRequest, NextApiResponse } from "next";
 import { v2 as cloudinary } from "cloudinary";
+import { IItem } from "../../../src/actions";
 
 export default async function handler(
   req: NextApiRequest,
@@ -25,17 +26,44 @@ export default async function handler(
 }
 
 async function get(req: NextApiRequest, res: NextApiResponse) {
-  const { id } = req.query;
-  const items =
-    await prisma.$queryRaw`SELECT * FROM Product WHERE product_id = ${id}`;
+  const id: any = req.query.id;
+
+  if (!id) {
+    return res.status(500).json({
+      status: "error",
+      message: "missing required parameter",
+    });
+  }
+
+  const items: IItem[] =
+    await prisma.$queryRaw`SELECT * FROM Product WHERE product_id = ${parseInt(
+      id
+    )}`;
   return res.json({
     status: "success",
-    data: items,
+    item: items.length ? items[0] : null,
   });
 }
 
 async function delete_method(req: NextApiRequest, res: NextApiResponse) {
-  return res.status(500).json({
-    status: "error",
+  console.log(req.headers);
+  const id: any = req.query.id;
+  const matches: [] =
+    await prisma.$queryRaw`SELECT * FROM Account, Product WHERE token_string::text = ${
+      req.headers.authorization
+    } AND account_type = 'admin' AND product_id = ${parseInt(id)}`;
+
+  if (!matches.length) {
+    return res.status(500).json({
+      status: "error",
+    });
+  }
+
+  await prisma.$queryRaw`DELETE FROM Product WHERE product_id = ${parseInt(
+    id
+  )}`;
+
+  return res.json({
+    status: "success",
   });
 }

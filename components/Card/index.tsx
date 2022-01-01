@@ -43,20 +43,20 @@ const CustomCard: FC<CardProps> = props => {
         <Grid item xs={12} className={classes.image}>
           <Image
             className={classes.hover}
-            onClick={() => router.push(`/items/${item.id}`)}
+            onClick={() => router.push(`/items/${item.product_id}`)}
             width={120}
             height={170}
-            src={`${process.env.STRAPI_URL}${item.image.url}`}
-            alt={item.title}
+            src={`${item.image_url}`}
+            alt={item.product_name}
           />
         </Grid>
         <Grid item xs={12} className={classes.pricing}>
           <Typography
             variant='subtitle1'
             className={`${classes.title} ${classes.hover}`}
-            onClick={() => router.push(`/items/${item.id}`)}
+            onClick={() => router.push(`/items/${item.product_id}`)}
           >
-            {item.title}
+            {item.product_name}
           </Typography>
           <Box component='span' className={classes.price}>
             Rs.

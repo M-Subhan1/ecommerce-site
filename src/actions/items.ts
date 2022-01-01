@@ -14,11 +14,22 @@ export interface FetchItemsAction {
   payload: IItem[];
 }
 
+export interface DeleteItemAction {
+  type: ActionTypes.DELETE_ITEM;
+  payload: string;
+}
+
+export interface SelectItemAction {
+  type: ActionTypes.SELECT_ITEM;
+  payload: IItem;
+}
+
 export const fetchItem = (productId: number) => async (dispatch: Dispatch) => {
-  console.log(productId);
   const {
     data: { item },
-  } = await axios.get(`/api/items/${productId}`);
+  } = await axios.get(`/api/products/${productId}`);
+
+  console.log(item);
 
   dispatch<FetchItemAction>({
     type: ActionTypes.FETCH_ITEM,
@@ -28,11 +39,35 @@ export const fetchItem = (productId: number) => async (dispatch: Dispatch) => {
 
 export const fetchItems = () => async (dispatch: Dispatch) => {
   const {
-    data: { books },
-  } = await axios.get("/api/items/");
+    data: { items },
+  } = await axios.get("/api/products/");
 
   dispatch<FetchItemsAction>({
     type: ActionTypes.FETCH_ITEMS,
-    payload: books,
+    payload: items,
   });
 };
+
+export const selectItem: (item: IItem) => SelectItemAction = (item: IItem) => {
+  return {
+    type: ActionTypes.SELECT_ITEM,
+    payload: item,
+  };
+};
+
+export const deleteItem =
+  (product_id: string) => async (dispatch: Dispatch) => {
+    const token = localStorage.getItem("token");
+    const res = await axios.delete(`/api/products/${product_id}`, {
+      headers: {
+        Authorization: token,
+      },
+    });
+
+    console.log(res);
+
+    dispatch<DeleteItemAction>({
+      type: ActionTypes.DELETE_ITEM,
+      payload: product_id,
+    });
+  };

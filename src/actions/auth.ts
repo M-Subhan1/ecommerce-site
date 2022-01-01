@@ -1,7 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { ActionTypes } from "./index";
 import { Action, Dispatch } from "redux";
-import { IState } from "../reducers";
 
 export interface SignInAction {
   type: ActionTypes.SIGN_IN;

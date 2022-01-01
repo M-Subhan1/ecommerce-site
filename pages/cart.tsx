@@ -17,11 +17,13 @@ import MinusIcon from "../public/svg/minus.svg";
 import LockIcon from "../public/svg/lock.svg";
 import { useRouter } from "next/dist/client/router";
 import CancelIcon from "../public/svg/cancel.svg";
+import { selectItem } from "../src/actions/items";
 
 interface PageProps {
   cart: CartItem[];
   addToCart: (item: CartItem, quatity?: number) => AddToCartAction;
   removeFromCart: (item: CartItem, quatity?: number) => RemoveFromCartAction;
+  selectItem: (item: CartItem) => void;
 }
 
 const Cart: NextPage<PageProps> = props => {
@@ -85,7 +87,7 @@ const Cart: NextPage<PageProps> = props => {
           </Grid>
           {props.cart.map(item => (
             <Grid
-              key={item.id}
+              key={item.product_id}
               item
               xs={12}
               container
@@ -97,8 +99,9 @@ const Cart: NextPage<PageProps> = props => {
                   <Image
                     width={70}
                     height={100}
-                    src={`${process.env.STRAPI_URL}${item.image.url}`}
+                    src={item.image_url}
                     alt='book-title-image'
+                    onClick={() => props.selectItem(item)}
                   />
                   <Box
                     component='span'
@@ -113,14 +116,14 @@ const Cart: NextPage<PageProps> = props => {
                   </Box>
                 </Box>
                 <Typography variant='subtitle2' align='left'>
-                  {item.title}
+                  {item.product_name}
                 </Typography>
                 <Typography
                   variant='subtitle2'
                   align='left'
                   className={classes.productId}
                 >
-                  #{item.id}
+                  #{item.product_id}
                 </Typography>
               </Grid>
               <Grid item xs={2}>
@@ -173,7 +176,8 @@ const Cart: NextPage<PageProps> = props => {
             </Grid>
             <Grid item xs={12}>
               <Typography component='h6' className={classes.cartTotal}>
-                Cart Total<Box component='span'>Rs {totalPrice}/-</Box>
+                Cart Total
+                <Box component='span'>Rs {totalPrice.toPrecision(2)}/-</Box>
                 <Box component='div'>
                   <Typography className={classes.message}>
                     Shipping calculated at checkout
@@ -202,4 +206,8 @@ const mapStateToProps = (state: IState) => {
   };
 };
 
-export default connect(mapStateToProps, { addToCart, removeFromCart })(Cart);
+export default connect(mapStateToProps, {
+  addToCart,
+  removeFromCart,
+  selectItem,
+})(Cart);

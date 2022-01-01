@@ -32,11 +32,11 @@ const post = async (req: NextApiRequest, res: NextApiResponse) => {
     const user: any[] =
       await prisma.$queryRaw`SELECT * FROM Account WHERE token_string::text = ${fields.token} AND account_type = 'admin'`;
 
-    // if (!user.length)
-    //   return res.json({
-    //     status: "error",
-    //     message: "Invalid Token",
-    //   });
+    if (!user.length)
+      return res.json({
+        status: "error",
+        message: "Invalid Token",
+      });
 
     if (!files.image) {
       return res.json({
@@ -64,7 +64,6 @@ const post = async (req: NextApiRequest, res: NextApiResponse) => {
             fields.discount
           )}, ${parseInt(fields.stock)}, ${result.url}) RETURNING *`;
 
-        console.log(item);
         return res.status(201).json({
           success: true,
           message: "Item Created",
