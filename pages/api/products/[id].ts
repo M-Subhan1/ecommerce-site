@@ -46,8 +46,8 @@ async function get(req: NextApiRequest, res: NextApiResponse) {
 }
 
 async function delete_method(req: NextApiRequest, res: NextApiResponse) {
-  console.log(req.headers);
   const id: any = req.query.id;
+  console.log(id + "here");
   const matches: [] =
     await prisma.$queryRaw`SELECT * FROM Account, Product WHERE token_string::text = ${
       req.headers.authorization

@@ -27,7 +27,7 @@ const App = (props: AppProps) => {
   return (
     <React.Fragment>
       <Head>
-        <title>Creative Books</title>
+        <title>Dummy Stores</title>
         <meta
           name='viewport'
           content='minimum-scale=1, initial-scale=1, width=device-width'
@@ -42,22 +42,6 @@ const App = (props: AppProps) => {
           <SnackBar />
         </ThemeProvider>
       </Provider>
-
-      <Script
-        async
-        src='https://www.googletagmanager.com/gtag/js?id=G-H124HW100E'
-      />
-
-      <Script strategy='lazyOnload' id='G-H124HW100E'>
-        {`
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-H124HW100E', {
-          page_path: window.location.pathname,
-        });
-      `}
-      </Script>
     </React.Fragment>
   );
 };

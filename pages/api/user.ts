@@ -2,18 +2,6 @@ import { prisma } from "../../src/db";
 import { NextApiRequest, NextApiResponse } from "next";
 import bcrypt from "bcrypt";
 
-interface IUser {
-  email: string;
-  password: string;
-  first_name: string;
-  last_name: string;
-  is_verified: Boolean;
-  token_string: String;
-  token_updated_at: Date;
-  token_is_valid: Boolean;
-  account_type: string;
-}
-
 export default async function index(req: NextApiRequest, res: NextApiResponse) {
   switch (req.method) {
     case "POST":
@@ -34,7 +22,7 @@ async function post(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { body } = req;
     console.log(body);
-    const users: IUser[] =
+    const users: any =
       await prisma.$queryRaw`SELECT * FROM Account WHERE email = ${body.email};`;
 
     console.log(users);
@@ -65,7 +53,7 @@ async function post(req: NextApiRequest, res: NextApiResponse) {
 async function get(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { body } = req;
-    const users: IUser[] =
+    const users: any =
       await prisma.$queryRaw`SELECT * FROM Account LEFT JOIN Customer ON Account.user_id = Customer.user_id WHERE email = ${body.email};`;
     if (!users.length)
       return res.status(200).json({
@@ -76,18 +64,28 @@ async function get(req: NextApiRequest, res: NextApiResponse) {
     if (bcrypt.compareSync(body.password, users[0].password)) {
       const cart =
         await prisma.$queryRaw`SELECT * FROM Cart JOIN Cart_list ON Cart.user_id = Cart_list.user_id WHERE user_id = ${users[0].email};`;
+
+      const data: any = {
+        token: users[0].token_string,
+        user: {
+          email: users[0].email,
+          first_name: users[0].first_name,
+          last_name: users[0].last_name,
+          account_type: users[0].account_type,
+        },
+      };
+
+      if (users[0].street) {
+        data.user.street = users[0].street;
+        data.user.city = users[0].city;
+        data.user.state = users[0].state;
+        data.user.country = users[0].country;
+      }
+
       return res.json({
         status: "success",
-        data: {
-          token: users[0].token_string,
-          user: {
-            email: users[0].email,
-            first_name: users[0].first_name,
-            last_name: users[0].last_name,
-            account_type: users[0].account_type,
-          },
-          cart,
-        },
+        data,
+        cart,
       });
     }
   } catch (err) {

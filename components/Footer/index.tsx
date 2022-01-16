@@ -15,19 +15,19 @@ const Footer: FC = () => {
             <Grid container>
               <Grid item xs={12} md={4}>
                 <Box component='span'>
-                  Creative Books, 7/8 Makkah Center, Lower Mall,Lahore, Pakistan
+                  Lorem Ipsum, I-8, Islamabad, Pakistan
                 </Box>
               </Grid>
               <Grid item xs={12} md={4}>
-                <Box component='span'>info@creativebooks.pk</Box>
+                <Box component='span'>info@dummystores.pk</Box>
               </Grid>
               <Grid item xs={12} md={4}>
-                <Box component='span'>042 37 22 46 66 /042 37 110 267-70</Box>
+                <Box component='span'>051 27 32 46 56 /051 37 120 237-70</Box>
               </Grid>
             </Grid>
           </Box>
           <Box className={classes.footerSection}>
-            {year} Creative Books. All Rights Reserved
+            {year} Dummy Stores. All Rights Reserved
           </Box>
         </Container>
       </Toolbar>

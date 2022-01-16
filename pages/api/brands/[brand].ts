@@ -24,7 +24,7 @@ export default async function handler(
 async function get(req: NextApiRequest, res: NextApiResponse) {
   try {
     const products: any =
-      await prisma.$queryRaw`SELECT product_id, units, price, image_url, discount FROM Product WHERE brand = ${req.query.brand}`;
+      await prisma.$queryRaw`SELECT product_id, stock, price, image_url, discount FROM Product WHERE brand = ${req.query.brand}`;
     return res.status(200).json({
       status: "success",
       products,

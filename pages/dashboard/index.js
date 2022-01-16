@@ -9,8 +9,7 @@ import StoreIcon from "@material-ui/icons/Store";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import AddItem from "../../components/dashboard/addItem";
 import ViewItems from "../../components/dashboard/viewItems";
-import ViewOrders from "../../components/dashboard/viewOrders";
-import HomeIcon from "@material-ui/icons/Home";
+import { useRouter } from "next/dist/client/router";
 
 const useStyles = makeStyles(theme => ({
   "@global": {
@@ -208,15 +207,21 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const Dashboard = props => {
+  const router = useRouter();
   const classes = useStyles();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [option, setOption] = useState(0);
 
+  useEffect(() => {
+    const user = props.user;
+
+    if (!user) router.push("/login");
+    if (user.account_type != "admin") router.push("/");
+  });
+
   const options = [
     <AddItem key='add' classes={classes} />,
-    <AddItem key='add' classes={classes} />,
     <ViewItems key='delete' classes={classes} />,
-    <ViewOrders key='orders' classes={classes} />,
   ];
 
   const handleSidebarOpen = () => {
@@ -237,18 +242,10 @@ const Dashboard = props => {
         >
           <MenuIcon />
         </Button>
-
         <Box>
           <Button
             className={classes.option}
             onClick={() => setOption(0)}
-            variant='text'
-          >
-            <HomeIcon />
-          </Button>
-          <Button
-            className={classes.option}
-            onClick={() => setOption(1)}
             variant='text'
           >
             <AddIcon className={classes.icon} />
@@ -262,7 +259,7 @@ const Dashboard = props => {
 
           <Button
             className={classes.option}
-            onClick={() => setOption(2)}
+            onClick={() => setOption(1)}
             variant='text'
           >
             <DeleteIcon className={classes.icon} />
@@ -271,19 +268,6 @@ const Dashboard = props => {
               className={`${isSidebarOpen ? "" : classes.close}`}
             >
               Delete Product
-            </span>
-          </Button>
-          <Button
-            className={classes.option}
-            onClick={() => setOption(3)}
-            variant='text'
-          >
-            <StoreIcon className={classes.icon} />
-            <span
-              align='center'
-              className={`${isSidebarOpen ? "" : classes.close}`}
-            >
-              View Orders
             </span>
           </Button>
         </Box>

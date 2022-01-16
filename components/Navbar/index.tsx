@@ -52,6 +52,12 @@ const NavBar: FC<NavBarProps> = props => {
   const [hamburgerOpen, setIsHamburgerOpen] = React.useState(false);
 
   useEffect(() => {
+    const user: any = props.user;
+    if (!user) router.push("/login");
+    else if (user.account_type == "admin") router.push("/dashboard");
+  }, [props.user]);
+
+  useEffect(() => {
     if (props.user) return;
 
     const token = localStorage.getItem("token");
