@@ -21,6 +21,7 @@ interface ComponentProps {
   cart: IState["cart"];
   placeOrder: Function;
   emptyCart: Function;
+  user: any;
 }
 
 const Checkout: FC<ComponentProps> = props => {
@@ -37,6 +38,21 @@ const Checkout: FC<ComponentProps> = props => {
     country: "",
     phone_number: "",
   });
+
+  useEffect(() => {
+    const user = props.user;
+    if (!user) return;
+
+    setData({
+      first_name: user.first_name,
+      last_name: user.last_name,
+      street: user.street,
+      city: user.city,
+      state: user.state,
+      country: user.country,
+      phone_number: user.phone_number,
+    });
+  }, [props.user]);
 
   useEffect(() => {
     if (!props.cart.length) router.replace("/");
@@ -200,6 +216,7 @@ const Checkout: FC<ComponentProps> = props => {
 const mapStateToProps = (state: IState) => {
   return {
     cart: state.cart,
+    user: state.user,
   };
 };
 

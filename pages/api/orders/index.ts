@@ -86,6 +86,17 @@ async function post(req: NextApiRequest, res: NextApiResponse) {
   const order: any =
     await prisma.$queryRaw`INSERT INTO Orders(email, street, city, state, country, phone_number) VALUES(${user[0].email}, ${data.street}, ${data.city}, ${data.state}, ${data.country}, ${data.phone_number}) RETURNING *`;
 
+  const customer: any =
+    await prisma.$queryRaw`INSERT INTO Customer (email, rating, street, city, state, country) VALUES (${
+      user[0].email
+    }, ${1}, ${data.street}, ${data.city}, ${data.state}, ${
+      data.country
+    }) ON CONFLICT (email) DO UPDATE SET rating = Customer.rating + ${parseInt(
+      "1"
+    )}, street = ${data.street}, city = ${data.city}, country = ${
+      data.country
+    }, state = ${data.state}`;
+
   cart.forEach((e: any) => {
     query.push(
       `(${parseInt(order[0].order_id)}, ${parseInt(e.product_id)}, ${parseInt(
