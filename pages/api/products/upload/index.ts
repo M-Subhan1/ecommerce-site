@@ -2,19 +2,11 @@ import formidable from "formidable";
 import { prisma } from "../../../../src/db";
 import { NextApiRequest, NextApiResponse } from "next";
 import { v2 as cloudinary } from "cloudinary";
-import fs from "fs";
 
 export const config = {
   api: {
     bodyParser: false,
   },
-};
-
-export const saveFile = async (file: any, fileName: string) => {
-  // fs.writeFileSync(file);
-  cloudinary.uploader.upload(file.filepath, async (result: any) => {
-    console.log(result);
-  });
 };
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {

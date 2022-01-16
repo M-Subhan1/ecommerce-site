@@ -15,12 +15,16 @@ export interface CancelOrderAction {
 }
 
 export const placeOrder = (data: IOrder[]) => async (dispatch: Dispatch) => {
-  //   const response = await axios.post("/api/orders", { data });
-  //   if (response.data.success)
-  //     dispatch<PlaceOrderAction>({
-  //       type: ActionTypes.PLACE_ORDER,
-  //       payload: null,
-  //     });
+  const response = await axios.post(
+    "/api/orders",
+    { data },
+    { headers: { authorization: localStorage.getItem("token") } }
+  );
+  if (response.data.success)
+    dispatch<PlaceOrderAction>({
+      type: ActionTypes.PLACE_ORDER,
+      payload: null,
+    });
 };
 
 export const cancelOrder = () => async (dispatch: Dispatch) => {

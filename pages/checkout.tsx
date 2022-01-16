@@ -9,12 +9,9 @@ import Box from "@material-ui/core/Box";
 import { TextField, Grid, Container } from "@material-ui/core";
 import { connect } from "react-redux";
 import { useRouter } from "next/dist/client/router";
-import { placeOrder } from "../src/actions";
+import { placeOrder, emptyCart } from "../src/actions";
 import { IState } from "../src/reducers";
 import useStyles from "../styles/checkout";
-import { Formik, Form } from "formik";
-import axios from "axios";
-import aesjs from "aes-js";
 
 function getSteps() {
   return ["Address", "Payment Methods"];
@@ -23,6 +20,7 @@ function getSteps() {
 interface ComponentProps {
   cart: IState["cart"];
   placeOrder: Function;
+  emptyCart: Function;
 }
 
 const Checkout: FC<ComponentProps> = props => {
@@ -31,13 +29,13 @@ const Checkout: FC<ComponentProps> = props => {
   const [activeStep, setActiveStep] = React.useState(0);
   const steps = getSteps();
   const [data, setData] = React.useState({
-    fullName: "",
+    first_name: "",
+    last_name: "",
     street: "",
     city: "",
+    state: "",
     country: "",
-    email: "",
-    phoneNumber: "",
-    paymentMethod: "a",
+    phone_number: "",
   });
 
   useEffect(() => {
@@ -54,23 +52,33 @@ const Checkout: FC<ComponentProps> = props => {
                 <Typography variant='h6'>Shipping Details</Typography>
               </Box>
             </Grid>
-            <Grid className={classes.inputContainer} item xs={12} md={4}>
+            <Grid className={classes.inputContainer} item xs={12} md={6}>
               <TextField
-                label='Full Name'
+                label='First Name'
                 fullWidth
                 variant='outlined'
-                value={data.fullName}
-                onChange={e => handleChange({ fullName: e.target.value })}
+                value={data.first_name}
+                onChange={e => handleChange({ first_name: e.target.value })}
                 required
               ></TextField>
             </Grid>
-            <Grid className={classes.inputContainer} item xs={12} md={4}>
+            <Grid className={classes.inputContainer} item xs={12} md={6}>
               <TextField
-                label='Email'
+                label='Last Name'
                 fullWidth
                 variant='outlined'
-                value={data.email}
-                onChange={e => handleChange({ email: e.target.value })}
+                value={data.last_name}
+                onChange={e => handleChange({ last_name: e.target.value })}
+                required
+              ></TextField>
+            </Grid>
+            <Grid className={classes.inputContainer} item xs={12} md={8}>
+              <TextField
+                label='Street'
+                fullWidth
+                variant='outlined'
+                value={data.street}
+                onChange={e => handleChange({ street: e.target.value })}
                 required
               ></TextField>
             </Grid>
@@ -79,22 +87,12 @@ const Checkout: FC<ComponentProps> = props => {
                 label='Phone Number'
                 fullWidth
                 variant='outlined'
-                value={data.phoneNumber}
-                onChange={e => handleChange({ phoneNumber: e.target.value })}
+                value={data.phone_number}
+                onChange={e => handleChange({ phone_number: e.target.value })}
                 required
               ></TextField>
             </Grid>
-            <Grid className={classes.inputContainer} item xs={12} md={6}>
-              <TextField
-                label='Address'
-                fullWidth
-                variant='outlined'
-                value={data.street}
-                onChange={e => handleChange({ street: e.target.value })}
-                required
-              ></TextField>
-            </Grid>
-            <Grid className={classes.inputContainer} item xs={6} md={3}>
+            <Grid className={classes.inputContainer} item xs={6} md={4}>
               <TextField
                 label='City'
                 fullWidth
@@ -104,7 +102,17 @@ const Checkout: FC<ComponentProps> = props => {
                 required
               ></TextField>
             </Grid>
-            <Grid className={classes.inputContainer} item xs={6} md={3}>
+            <Grid className={classes.inputContainer} item xs={6} md={4}>
+              <TextField
+                label='State'
+                fullWidth
+                variant='outlined'
+                value={data.state}
+                onChange={e => handleChange({ state: e.target.value })}
+                required
+              ></TextField>
+            </Grid>
+            <Grid className={classes.inputContainer} item xs={6} md={4}>
               <TextField
                 label='Country'
                 fullWidth
@@ -117,90 +125,16 @@ const Checkout: FC<ComponentProps> = props => {
           </React.Fragment>
         );
       case 1:
-        return (
-          <div>
-            Easy Paisa/ Cash on Delivery
-            <iframe
-              id='easypay-iframe'
-              name='easypay-iframe'
-              src='about:blank'
-              width='100%'
-              height='500px'
-            ></iframe>
-          </div>
-        );
+        return <div>Add Payment methods (if needed)</div>;
       default:
         return "Unknown step";
     }
   }
 
-  const encrypt = (str: string) => {
-    const hashKey = "M7E2LM02OQWTSSZK";
-
-    const keyBuffer = aesjs.utils.utf8.toBytes(hashKey);
-    const inputBuffer = aesjs.padding.pkcs7.pad(aesjs.utils.utf8.toBytes(str));
-    const escEcb = new aesjs.ModeOfOperation.ecb(keyBuffer);
-    const encryptedBytes = escEcb.encrypt(inputBuffer);
-    return Buffer.from(encryptedBytes).toString("base64");
-  };
-
   const handlePlaceOrder = async () => {
-    const url = "https://easypaystg.easypaisa.com.pk/tpg/?";
-    let encryptedString = "";
-    // const cart = props.cart.map(item => ({
-    //   productId: item.id,
-    //   quantity: item.quantity,
-    //   price: item.price,
-    //   name: `${item.category} ${item.title}-${item.class} ${item.medium} Medium`.toUpperCase(),
-    // }));
-
-    // props.placeOrder({ ...data, cart });
-    const tokenExpiry = new Date();
-    // tokenExpiry.setDate(8);
-
-    const params: { [key: string]: any } = {
-      amount: "10.0",
-      orderRefNum: 1221,
-      paymentMethod: "InitialRequest",
-      postBackURL: "https://www.google.com",
-      storeId: 14013,
-      timeStamp: new Date().toISOString(),
-    };
-
-    encryptedString = Object.keys(params)
-      .map(key => `${key}=${params[key]}`)
-      .join("&");
-
-    console.log(encryptedString);
-    const encryptedData = encrypt(encryptedString);
-    console.log(encryptedData);
-
-    const newParams: {
-      [key: string]: any;
-    } = {
-      storeId: 14013,
-      orderId: 1221,
-      transactionAmount: "10.0",
-      mobileAccountNo: "",
-      emailAddress: "",
-      transactionType: "InitialRequest",
-      tokenExpiry: "",
-      bankIdentificationNumber: "",
-      encryptedHashedRequest: encryptedData,
-      merchantPaymentMethod: "",
-      postBackURL: "www.google.com",
-      signature: "",
-    };
-
-    const iframe = document.getElementById("easypay-iframe")!;
-
-    let string = Object.keys(newParams)
-      .map(key => `${key}=${newParams[key]}`)
-      .join("&");
-
-    iframe.setAttribute("src", url + string);
-
-    console.log(url + string);
+    props.placeOrder({ cart: props.cart, data });
+    props.emptyCart();
+    router.push("/");
   };
 
   const handleChange = (obj: any) => {
@@ -269,4 +203,4 @@ const mapStateToProps = (state: IState) => {
   };
 };
 
-export default connect(mapStateToProps, { placeOrder })(Checkout);
+export default connect(mapStateToProps, { placeOrder, emptyCart })(Checkout);

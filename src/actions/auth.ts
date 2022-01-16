@@ -4,7 +4,7 @@ import { Action, Dispatch } from "redux";
 
 export interface SignInAction {
   type: ActionTypes.SIGN_IN;
-  payload: { user: any };
+  payload: { user: any; cart: any };
 }
 
 export interface SignOutAction {
@@ -19,14 +19,12 @@ export const sign_in =
 
     if (!data.token) return;
 
-    console.log(data);
-
     localStorage.setItem("token", data.token);
     localStorage.setItem("user", data.user);
 
     dispatch<SignInAction>({
       type: ActionTypes.SIGN_IN,
-      payload: data.user,
+      payload: data,
     });
   };
 

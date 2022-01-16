@@ -16,9 +16,13 @@ const useStyles = makeStyles(theme => ({
   "@global": {
     body: {
       backgroundColor: "#2e2e2e",
+      minHeight: "80vh",
     },
   },
 
+  container: {
+    marginTop: "4rem",
+  },
   sidebar: {
     position: "fixed",
     top: "0",
@@ -168,7 +172,7 @@ const useStyles = makeStyles(theme => ({
   editProductContainer: {
     borderRadius: "5px",
     background: "white",
-    margin: "5rem 0 9rem 0",
+    margin: "10rem 0 9rem 0",
     minHeight: "25vh",
     padding: "2rem",
   },
@@ -301,7 +305,7 @@ const Dashboard = props => {
   };
 
   return (
-    <Box>
+    <Box className={classes.container}>
       <Sidebar />
       <Grid container className={classes.contentContainer}>
         <Grid item xs={isSidebarOpen ? 2 : 1} />

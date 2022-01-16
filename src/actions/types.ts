@@ -10,6 +10,7 @@ import {
   SetSnackBarAction,
   SelectItemAction,
   DeleteItemAction,
+  EmptyCartAction,
 } from ".";
 
 export enum ActionTypes {
@@ -28,6 +29,7 @@ export enum ActionTypes {
   CANCEL_ORDER,
   // SNACK BAR
   SET_SNACKBAR,
+  EMPTY_CART,
 }
 
 export type Action =
@@ -41,4 +43,5 @@ export type Action =
   | CancelOrderAction
   | SetSnackBarAction
   | SelectItemAction
+  | EmptyCartAction
   | DeleteItemAction;

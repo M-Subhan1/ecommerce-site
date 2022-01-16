@@ -64,8 +64,6 @@ export const deleteItem =
       },
     });
 
-    console.log(res);
-
     dispatch<DeleteItemAction>({
       type: ActionTypes.DELETE_ITEM,
       payload: product_id,

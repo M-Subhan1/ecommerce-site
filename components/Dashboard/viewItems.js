@@ -20,7 +20,16 @@ import { fetchItems, deleteItem } from "../../src/actions/index";
 import axios from "axios";
 import Image from "next/image";
 
-function createData(id, name, type, price, discount, stock, units_sold) {
+function createData(
+  id,
+  name,
+  type,
+  price,
+  discount,
+  stock,
+  units_sold,
+  image_url
+) {
   return {
     id,
     name,
@@ -29,25 +38,17 @@ function createData(id, name, type, price, discount, stock, units_sold) {
     discount,
     stock,
     units_sold,
+    image_url,
   };
 }
 
 function Row(props) {
   const { row, selectProduct } = props;
-  const [open, setOpen] = React.useState(false);
 
   return (
     <React.Fragment>
       <TableRow>
-        <TableCell>
-          <IconButton
-            aria-label='expand row'
-            size='small'
-            onClick={() => setOpen(!open)}
-          >
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
-        </TableCell>
+        <TableCell></TableCell>
         <TableCell component='th' scope='row'>
           {row.id}
         </TableCell>
@@ -58,63 +59,17 @@ function Row(props) {
         <TableCell align='right'>{row.units_sold}</TableCell>
         <TableCell align='right'>{row.discount}</TableCell>
         <TableCell align='center'>
-          <Button onClick={() => selectProduct(row)}>
+          <Button
+            onClick={() => {
+              console.log(row);
+              selectProduct(row);
+            }}
+          >
             <EditIcon />
           </Button>
           <Button color='secondary' onClick={() => props.deleteItem(row.id)}>
             <DeleteIcon />
           </Button>
-        </TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
-          <Collapse in={open} timeout='auto' unmountOnExit>
-            <Box margin={1}>
-              <Grid container>
-                <Grid item xs={6} md={4}>
-                  <Typography
-                    align='left'
-                    variant='body2'
-                    gutterBottom
-                    component='div'
-                  >
-                    Name: Hello
-                  </Typography>
-                </Grid>
-                <Grid item xs={6} md={4}>
-                  <Typography
-                    align='center'
-                    variant='body2'
-                    gutterBottom
-                    component='div'
-                  >
-                    Email: Hmmmm
-                  </Typography>
-                </Grid>
-                <Grid item xs={6} md={4}>
-                  <Typography
-                    align='center'
-                    variant='body2'
-                    gutterBottom
-                    component='div'
-                  >
-                    Phone: k
-                  </Typography>
-                </Grid>
-                <Grid item xs={6} md={4}>
-                  <Typography
-                    align='left'
-                    variant='body2'
-                    gutterBottom
-                    component='div'
-                  >
-                    Address: Okok
-                  </Typography>
-                  {/* change */}
-                </Grid>
-              </Grid>
-            </Box>
-          </Collapse>
         </TableCell>
       </TableRow>
     </React.Fragment>
@@ -139,7 +94,7 @@ function ViewItems(props) {
 
   const [formValues, setFormValues] = useState(initialState);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const formData = new FormData();
 
     Object.keys(formValues).forEach(key =>
@@ -147,7 +102,8 @@ function ViewItems(props) {
     );
 
     formData.append("token", localStorage.getItem("token"));
-    axios.patch(`/api/products/upload/${selectedProduct.productId}`, formData);
+    console.log(selectedProduct.id);
+    await axios.patch(`/api/products/upload/${selectedProduct.id}`, formData);
   };
 
   const setNewValue = (prop, e) => {
@@ -161,15 +117,15 @@ function ViewItems(props) {
   useEffect(() => {
     if (!selectedProduct) return;
     setFormValues({
-      quantity: selectedProduct.quantity,
+      stock: selectedProduct.stock,
       price: selectedProduct.price,
       discount: selectedProduct.discount,
       image: null,
     });
+    console.log(selectedProduct);
   }, [selectedProduct]);
 
   useEffect(() => {
-    console.log(props.products);
     if (props.products.length) return;
     props.fetchItems();
   }, []);
@@ -184,7 +140,8 @@ function ViewItems(props) {
           item.price,
           item.discount,
           item.stock,
-          item.units_sold
+          item.units_sold,
+          item.image_url
         )
       )
     );
@@ -236,7 +193,7 @@ function ViewItems(props) {
     <Box className={classes.editProductContainer}>
       <Grid container>
         <Grid item lg={4} md={6} xs={12}>
-          <Image width={180} height={250} src={product.image_url} />
+          <Image width={180} height={250} src={selectedProduct.image_url} />
         </Grid>
         <Grid item container lg={8} md={6} xs={12}>
           <Grid item xs={4} className={classes.gridItem}>
@@ -311,7 +268,6 @@ function ViewItems(props) {
 }
 
 const mapStateToProps = state => {
-  console.log(state);
   return {
     products: state.items,
   };

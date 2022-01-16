@@ -27,15 +27,10 @@ export interface RemoveFromCartAction {
   payload: CartItem;
 }
 
-// export const addToCart: (a: CartItem, b?: number) => AddToCartAction = (
-//   item,
-//   qty = 1
-// ) => {
-//   return {
-//     type: ActionTypes.ADD_TO_CART,
-//     payload: { item: item, quantity: qty },
-//   };
-// };
+export interface EmptyCartAction {
+  type: ActionTypes.EMPTY_CART;
+  payload: null;
+}
 
 export const addToCart: (a: CartItem, b?: number) => void =
   (item, qty = 1) =>
@@ -52,14 +47,26 @@ export const addToCart: (a: CartItem, b?: number) => void =
     });
   };
 
-export const removeFromCart: (
-  item: CartItem,
-  qty?: number
-) => RemoveFromCartAction = (item, qty = 1) => {
-  const quantity = item.quantity - qty > 0 ? item.quantity - qty : 0;
+export const removeFromCart: (a: CartItem, b?: number) => void =
+  (item, qty = 1) =>
+  async (dispatch: Dispatch) => {
+    await axios.post(
+      `/api/cart`,
+      { product_id: item.product_id, quantity: -1 * qty },
+      { headers: { authorization: localStorage.getItem("token") } }
+    );
 
+    const quantity = item.quantity - qty > 0 ? item.quantity - qty : 0;
+
+    dispatch<RemoveFromCartAction>({
+      type: ActionTypes.REMOVE_FROM_CART,
+      payload: { ...item, quantity },
+    });
+  };
+
+export const emptyCart = () => {
   return {
-    type: ActionTypes.REMOVE_FROM_CART,
-    payload: { ...item, quantity },
+    type: ActionTypes.EMPTY_CART,
+    payload: null,
   };
 };

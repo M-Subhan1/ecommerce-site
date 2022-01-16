@@ -21,8 +21,8 @@ import { selectItem } from "../src/actions/items";
 
 interface PageProps {
   cart: CartItem[];
-  addToCart: (item: CartItem, quatity?: number) => AddToCartAction;
-  removeFromCart: (item: CartItem, quatity?: number) => RemoveFromCartAction;
+  addToCart: (item: CartItem, quatity?: number) => void;
+  removeFromCart: (item: CartItem, quatity?: number) => void;
   selectItem: (item: CartItem) => void;
 }
 

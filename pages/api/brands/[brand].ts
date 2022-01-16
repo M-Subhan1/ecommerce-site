@@ -9,11 +9,9 @@ export default async function handler(
     const { method } = req;
     method === "GET"
       ? get(req, res)
-      : method === "DELETE"
-      ? remove(req, res)
-      : res.status(401).json({
+      : res.json({
           status: "error",
-          message: "Method not supported",
+          message: "Method not allowed",
         });
   } catch (err) {
     res.status(500).json({
@@ -24,19 +22,18 @@ export default async function handler(
 }
 
 async function get(req: NextApiRequest, res: NextApiResponse) {
-  const items = await prisma.$queryRaw`SELECT * FROM PRoduct`;
-
-  return res.json({
-    status: "success",
-    data: items,
-  });
-}
-
-async function remove(req: NextApiRequest, res: NextApiResponse) {
-  const items = await prisma.$queryRaw`SELECT * FROM Product`;
-
-  return res.json({
-    status: "success",
-    data: items,
-  });
+  try {
+    const products: any =
+      await prisma.$queryRaw`SELECT product_id, units, price, image_url, discount FROM Product WHERE brand = ${req.query.brand}`;
+    return res.status(200).json({
+      status: "success",
+      products,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      status: "error",
+      error: err,
+    });
+  }
 }

@@ -81,3 +81,8 @@ async function post(req: NextApiRequest, res: NextApiResponse) {
     });
   }
 }
+
+// place order
+// view order
+
+// reviews

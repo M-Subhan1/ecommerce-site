@@ -66,14 +66,16 @@ async function get(req: NextApiRequest, res: NextApiResponse) {
   try {
     const { body } = req;
     const users: IUser[] =
-      await prisma.$queryRaw`SELECT * FROM Account WHERE email = ${body.email};`;
+      await prisma.$queryRaw`SELECT * FROM Account LEFT JOIN Customer ON Account.user_id = Customer.user_id WHERE email = ${body.email};`;
     if (!users.length)
       return res.status(200).json({
         status: "error",
         message: "Invalid Credentials",
       });
 
-    if (bcrypt.compareSync(body.password, users[0].password))
+    if (bcrypt.compareSync(body.password, users[0].password)) {
+      const cart =
+        await prisma.$queryRaw`SELECT * FROM Cart JOIN Cart_list ON Cart.user_id = Cart_list.user_id WHERE user_id = ${users[0].email};`;
       return res.json({
         status: "success",
         data: {
@@ -84,8 +86,10 @@ async function get(req: NextApiRequest, res: NextApiResponse) {
             last_name: users[0].last_name,
             account_type: users[0].account_type,
           },
+          cart,
         },
       });
+    }
   } catch (err) {
     console.log(err);
     return res.status(500).json({

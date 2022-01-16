@@ -54,10 +54,12 @@ async function post(req: NextApiRequest, res: NextApiResponse) {
         if (!user.length) throw new Error("Token not found");
       } else {
         user =
-          await prisma.$queryRaw`SELECT email, first_name, last_name, token_string, account_type FROM Account WHERE token_string::text = ${body.identifier}`;
+          await prisma.$queryRaw`SELECT Account.email, first_name, last_name, token_string, account_type FROM Account LEFT JOIN Customer ON Account.email = Customer.email WHERE token_string::text = ${body.identifier} OR Account.email = ${body.identifier};`;
       }
 
-      if (user.length && user[0].token_string)
+      if (user.length && user[0].token_string) {
+        const cart =
+          await prisma.$queryRaw`SELECT * FROM cart_view WHERE cart_view.user_id = ${users[0].email};`;
         return res.status(200).json({
           status: "success",
           token: user[0].token_string,
@@ -67,7 +69,9 @@ async function post(req: NextApiRequest, res: NextApiResponse) {
             last_name: user[0].last_name,
             account_type: user[0].account_type,
           },
+          cart,
         });
+      }
 
       return res.status(200).json({
         status: "error",

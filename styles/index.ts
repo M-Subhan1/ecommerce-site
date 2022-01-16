@@ -5,6 +5,7 @@ const useStyles = makeStyles((theme: Theme) =>
     root: {
       minHeight: "100vh",
       padding: "3rem",
+      paddingTop: "7rem",
 
       [theme.breakpoints.down(theme.breakpoints.values.lg)]: {
         padding: "4rem 10rem",

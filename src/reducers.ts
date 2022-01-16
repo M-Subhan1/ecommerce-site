@@ -1,7 +1,6 @@
 import { ActionTypes, Action, SnackBarState, SnackBarType } from "./actions";
 import { combineReducers } from "redux";
 import { CartItem } from "./actions/cart";
-import axios from "axios";
 
 interface ResponseUser {}
 
@@ -16,7 +15,7 @@ export interface IState {
 const user = (state: ResponseUser | null = null, action: Action) => {
   switch (action.type) {
     case ActionTypes.SIGN_IN:
-      return action.payload;
+      return action.payload.user;
     case ActionTypes.SIGN_OUT:
       localStorage.removeItem("token");
       return null;
@@ -58,6 +57,14 @@ const cart = (state: CartItem[] = [], action: Action) => {
     case ActionTypes.PLACE_ORDER:
     case ActionTypes.CANCEL_ORDER:
       return [];
+
+    case ActionTypes.SIGN_IN: {
+      return action.payload.cart;
+    }
+
+    case ActionTypes.EMPTY_CART: {
+      return [];
+    }
 
     case ActionTypes.ADD_TO_CART: {
       const { item, quantity } = action.payload;

@@ -64,7 +64,7 @@ model order_list {
 
 model orders {
   order_id      Int          @id @default(autoincrement())
-  amount_paid   Float        @default(0) @db.Real
+  amount_paid   Float?       @default(0) @db.Real
   email         String       @db.VarChar(255)
   street        String       @db.VarChar(255)
   city          String       @db.VarChar(255)
@@ -72,6 +72,7 @@ model orders {
   country       String       @db.VarChar(255)
   phone_number  String       @db.VarChar(20)
   shipping_cost Float        @default(300) @db.Real
+  status        String?      @default("processing") @db.VarChar(20)
   account       account      @relation(fields: [email], references: [email], onDelete: Cascade)
   order_list    order_list[]
 }
