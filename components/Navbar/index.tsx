@@ -25,7 +25,7 @@ interface ElevationScrollProps {
 }
 
 interface NavBarProps {
-  user: IState["user"];
+  user: any;
   cart: IState["cart"];
   cartURL: string;
   sign_in: (data: any) => void;
@@ -50,19 +50,21 @@ const NavBar: FC<NavBarProps> = props => {
   const router = useRouter();
   const classes = useStyles();
   const [hamburgerOpen, setIsHamburgerOpen] = React.useState(false);
-
-  useEffect(() => {
-    const user: any = props.user;
-    if (!user) router.push("/login");
-    else if (user.account_type == "admin") router.push("/dashboard");
-  }, [props.user]);
+  const [loading, setLoading] = React.useState(true);
 
   useEffect(() => {
     if (props.user) return;
 
     const token = localStorage.getItem("token");
     if (token) props.sign_in({ identifier: token });
+    setLoading(false);
   }, []);
+
+  useEffect(() => {
+    const user: any = props.user;
+    if (loading) return;
+    if (user && user.account_type == "admin") router.push("/dashboard");
+  }, [loading]);
 
   return (
     <Box>
@@ -80,7 +82,7 @@ const NavBar: FC<NavBarProps> = props => {
                     mr={2}
                     textAlign='center'
                     alignContent='center'
-                    onClick={() => router.push("/")}
+                    onClick={() => router.push("/dashboard")}
                   >
                     ABC
                   </Box>

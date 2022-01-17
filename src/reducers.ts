@@ -62,7 +62,7 @@ const cart = (state: CartItem[] = [], action: Action) => {
       return action.payload.cart;
     }
 
-    case ActionTypes.EMPTY_CART: {
+    case ActionTypes.EMPTY_CART || ActionTypes.SIGN_OUT: {
       return [];
     }
 

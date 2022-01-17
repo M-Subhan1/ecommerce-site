@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { NextPage } from "next";
 import { connect } from "react-redux";
 import {
@@ -24,15 +24,21 @@ interface PageProps {
   addToCart: (item: CartItem, quatity?: number) => void;
   removeFromCart: (item: CartItem, quatity?: number) => void;
   selectItem: (item: CartItem) => void;
+  user: any;
 }
 
 const Cart: NextPage<PageProps> = props => {
   const classes = useStyles();
   const router = useRouter();
-  const totalPrice = props.cart.reduce(
+  const price = props.cart.reduce(
     (acc, val) => acc + val.quantity * val.price * (1 - val.discount / 100),
     0
   );
+  const totalPrice = price.toFixed(2);
+
+  useEffect(() => {
+    if (!props.user) router.replace("/login");
+  });
 
   if (!props.cart.length) {
     return (
@@ -153,7 +159,7 @@ const Cart: NextPage<PageProps> = props => {
               </Grid>
               <Grid item xs={3}>
                 <Typography variant='subtitle2' align='center'>
-                  {Math.ceil(
+                  {Math.round(
                     item.price * item.quantity * (1 - item.discount / 100)
                   )}
                 </Typography>
@@ -177,7 +183,7 @@ const Cart: NextPage<PageProps> = props => {
             <Grid item xs={12}>
               <Typography component='h6' className={classes.cartTotal}>
                 Cart Total
-                <Box component='span'>Rs {totalPrice.toPrecision(2)}/-</Box>
+                <Box component='span'>Rs {price}/-</Box>
                 <Box component='div'>
                   <Typography className={classes.message}>
                     Shipping calculated at checkout
@@ -185,7 +191,6 @@ const Cart: NextPage<PageProps> = props => {
                 </Box>
               </Typography>
             </Grid>
-
             <Button
               className={classes.checkoutBtn}
               onClick={() => router.push("/checkout")}
@@ -203,6 +208,7 @@ const Cart: NextPage<PageProps> = props => {
 const mapStateToProps = (state: IState) => {
   return {
     cart: state.cart,
+    user: state.user,
   };
 };
 

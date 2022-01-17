@@ -5,7 +5,6 @@ import { Box, Grid, Button } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
 import AddIcon from "@material-ui/icons/Add";
 import DeleteIcon from "@material-ui/icons/Delete";
-import StoreIcon from "@material-ui/icons/Store";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import AddItem from "../../components/dashboard/addItem";
 import ViewItems from "../../components/dashboard/viewItems";
@@ -211,13 +210,14 @@ const Dashboard = props => {
   const classes = useStyles();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [option, setOption] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const user = props.user;
 
     if (!user) router.push("/login");
     if (user.account_type != "admin") router.push("/");
-  });
+  }, []);
 
   const options = [
     <AddItem key='add' classes={classes} />,

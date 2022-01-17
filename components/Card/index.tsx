@@ -44,7 +44,7 @@ const CustomCard: FC<CardProps> = props => {
           <Image
             className={classes.hover}
             onClick={() => router.push(`/items/${item.product_id}`)}
-            width={120}
+            width={170}
             height={170}
             src={`${item.image_url}`}
             alt={item.product_name}

@@ -56,6 +56,7 @@ const Checkout: FC<ComponentProps> = props => {
 
   useEffect(() => {
     if (!props.cart.length) router.replace("/");
+    else if (!props.user) router.replace("/login");
   });
 
   function getStepContent(step: any) {

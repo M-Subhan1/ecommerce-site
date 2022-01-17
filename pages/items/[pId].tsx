@@ -63,7 +63,7 @@ const ViewItem: NextPage<PageProps> = props => {
           // s={4}
           xs={12}
         >
-          <Image alt='title' width={350} height={500} src={product.image_url} />
+          <Image alt='title' width={500} height={500} src={product.image_url} />
         </Grid>
         <Grid
           className={classes.detailsContainer}
@@ -80,7 +80,7 @@ const ViewItem: NextPage<PageProps> = props => {
               {product.product_name}
             </Typography>
             <Typography className={classes.description}>
-              {/* {props.product.category.description} */}
+              {props?.product?.product_description}
             </Typography>
           </Box>
           <Box>
