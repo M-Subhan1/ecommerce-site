@@ -126,7 +126,10 @@ const NavBar: FC<NavBarProps> = props => {
                       variant='outlined'
                       className={`${classes.btn} ${classes.hidden}`}
                       color='secondary'
-                      onClick={() => props.sign_out()}
+                      onClick={() => {
+                        props.sign_out();
+                        router.push("/login");
+                      }}
                     >
                       Sign Out
                     </Button>
